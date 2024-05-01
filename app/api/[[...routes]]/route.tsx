@@ -47,7 +47,8 @@ app.frame("/", async (c) => {
   const minBidValue = highestBid ? BigInt(highestBid) + BigInt(minBidIncrement) : reservePrice
   
   return c.res({
-    image: `https://wrpcd.net/cdn-cgi/image/fit=contain,f=auto,/${encodedTokenUrl}`,
+    // image: `https://wrpcd.net/cdn-cgi/image/fit=contain,f=auto,/${encodedTokenUrl}`,
+    image: encodedTokenUrl,
     imageAspectRatio: "1:1",
     intents: [
       <TextInput placeholder={`Min bid value: ${formatEther(minBidValue)} ETH`} />,
