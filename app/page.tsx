@@ -1,16 +1,26 @@
+import { WEBSITE_URL } from "@/constants"
+import { NounsBuildToken } from "@/types"
 import { getFrameMetadata } from "frog/next"
 import type { Metadata } from "next"
+import Image from "next/image"
+
+export const dynamic = 'force-dynamic'
 
 export async function generateMetadata(): Promise<Metadata> {
   const frameTags = await getFrameMetadata(
-    `${process.env.VERCEL_URL || "http://localhost:3000"}/api`
+    `${WEBSITE_URL}/api`,
   )
   return {
     other: frameTags,
   }
 }
 
-export default function Home() {
+export default async function Home() {
+  const res = await fetch(`${WEBSITE_URL}/api/auction`, { cache: "no-store" })
+  const nounsBuildToken = await res.json() as NounsBuildToken
+
+  // console.log(nounsBuildToken)
+
   return (
     <main
       style={{
@@ -21,11 +31,16 @@ export default function Home() {
         justifyContent: "center",
         color: "black",
         fontWeight: "bolder",
-        fontSize: "112px",
-        backgroundColor: "#C4FF09",
       }}
     >
-      <a href="https://sendit.city/">$SENDIT</a>
+      {nounsBuildToken ? (
+        <Image
+          alt="Gnars"
+          width={"512"}
+          height={"512"}
+          src={`https://wrpcd.net/cdn-cgi/image/fit=contain,f=auto,/${nounsBuildToken.image}`}
+        />
+      ) : null}
     </main>
   )
 }
