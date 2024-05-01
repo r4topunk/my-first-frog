@@ -48,7 +48,8 @@ app.frame("/", async (c) => {
   
   return c.res({
     // image: `https://wrpcd.net/cdn-cgi/image/fit=contain,f=auto,/${encodedTokenUrl}`,
-    image: encodedTokenUrl,
+    // image: encodedTokenUrl,
+    image: nounsBuildToken.image,
     imageAspectRatio: "1:1",
     intents: [
       <TextInput placeholder={`Min bid value: ${formatEther(minBidValue)} ETH`} />,
