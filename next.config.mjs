@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ["wrpcd.net"]
+    domains: ["wrpcd.net", "nouns.build"]
   }
 }
 

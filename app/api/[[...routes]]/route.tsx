@@ -2,8 +2,9 @@
 
 import { abi } from "@/abis/auction"
 import { SenditABIts } from "@/abis/sendit"
-import { AUCTION_ADDRESS, WEBSITE_URL } from "@/constants"
+import { AUCTION_ADDRESS } from "@/constants"
 import { NounsBuildToken } from "@/types"
+import { fetchNounsBuild } from "@/utils"
 import { publicClient } from "@/web3-client"
 import { Button, Frog, TextInput } from "frog"
 import { devtools } from "frog/dev"
@@ -11,14 +12,16 @@ import { handle } from "frog/next"
 import { serveStatic } from "frog/serve-static"
 import { formatEther, parseUnits } from "viem"
 
+export const revalidate = 60
+
 const app = new Frog({
   assetsPath: "/",
   basePath: "/api",
 })
 
 app.frame("/", async (c) => {
-  const res = await fetch(`${WEBSITE_URL}/api/auction`, { next: { revalidate: 3600 } })
-  const nounsBuildToken = await res.json() as NounsBuildToken
+  const nounsBuildToken = await fetchNounsBuild() as NounsBuildToken
+  const encodedTokenUrl = encodeURIComponent(decodeURIComponent(nounsBuildToken.image))
 
   const contract = {
     address: AUCTION_ADDRESS,
@@ -41,11 +44,10 @@ app.frame("/", async (c) => {
   })
 
   const highestBid = auction[1]
-  
   const minBidValue = highestBid ? BigInt(highestBid) + BigInt(minBidIncrement) : reservePrice
-
+  
   return c.res({
-    image: (`https://wrpcd.net/cdn-cgi/image/fit=contain,f=auto,/${nounsBuildToken.image}`.replace("&", "%26")),
+    image: `https://wrpcd.net/cdn-cgi/image/fit=contain,f=auto,/${encodedTokenUrl}`,
     imageAspectRatio: "1:1",
     intents: [
       <TextInput placeholder={`Min bid value: ${formatEther(minBidValue)} ETH`} />,

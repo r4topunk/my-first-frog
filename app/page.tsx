@@ -1,10 +1,11 @@
 import { WEBSITE_URL } from "@/constants"
 import { NounsBuildToken } from "@/types"
+import { fetchNounsBuild } from "@/utils"
 import { getFrameMetadata } from "frog/next"
 import type { Metadata } from "next"
 import Image from "next/image"
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 60
 
 export async function generateMetadata(): Promise<Metadata> {
   const frameTags = await getFrameMetadata(
@@ -16,10 +17,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Home() {
-  const res = await fetch(`${WEBSITE_URL}/api/auction`, { cache: "no-store" })
-  const nounsBuildToken = await res.json() as NounsBuildToken
-
-  // console.log(nounsBuildToken)
+  const nounsBuildToken = await fetchNounsBuild() as NounsBuildToken
 
   return (
     <main
@@ -38,7 +36,7 @@ export default async function Home() {
           alt="Gnars"
           width={"512"}
           height={"512"}
-          src={`https://wrpcd.net/cdn-cgi/image/fit=contain,f=auto,/${nounsBuildToken.image}`}
+          src={nounsBuildToken.image}
         />
       ) : null}
     </main>
